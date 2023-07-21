@@ -7,18 +7,40 @@ find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
 
-set(EXECUTABLE_NAME ${PROJECT_NAME})
-add_executable(${EXECUTABLE_NAME} main.cpp)
+##
+## 2D FRACTALS
+##
 
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE glfw ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} glm::glm)
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${GLEW_INCLUDE_DIRS})
+add_executable(2d-fractals 2d_fractals.cpp)
 
-add_custom_command(TARGET ${EXECUTABLE_NAME} PRE_BUILD
+target_link_libraries(2d-fractals PRIVATE glfw ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} glm::glm)
+target_include_directories(2d-fractals PRIVATE ${GLEW_INCLUDE_DIRS})
+
+add_custom_command(TARGET 2d-fractals PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${PROJECT_SOURCE_DIR}/fragmentShader.glsl"
-        "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>")
+        "${PROJECT_SOURCE_DIR}/2d_fragment_shader.glsl"
+        "$<TARGET_FILE_DIR:2d-fractals>")
 
-add_custom_command(TARGET ${EXECUTABLE_NAME} PRE_BUILD
+add_custom_command(TARGET 2d-fractals PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${PROJECT_SOURCE_DIR}/vertexShader.glsl"
-        "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>")
+        "${PROJECT_SOURCE_DIR}/2d_vertex_shader.glsl"
+        "$<TARGET_FILE_DIR:2d-fractals>")
+
+##
+## 3D FRACTALS
+##
+
+add_executable(3d-fractals 3d_fractals.cpp)
+
+target_link_libraries(3d-fractals PRIVATE glfw ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} glm::glm)
+target_include_directories(3d-fractals PRIVATE ${GLEW_INCLUDE_DIRS})
+
+add_custom_command(TARGET 3d-fractals PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${PROJECT_SOURCE_DIR}/3d_fragment_shader.glsl"
+        "$<TARGET_FILE_DIR:3d-fractals>")
+
+add_custom_command(TARGET 3d-fractals PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${PROJECT_SOURCE_DIR}/3d_vertex_shader.glsl"
+        "$<TARGET_FILE_DIR:2d-fractals>")

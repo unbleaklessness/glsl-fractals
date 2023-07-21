@@ -88,7 +88,7 @@ void cursorPositionCallback(GLFWwindow* window, double xPosition, double yPositi
 
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
-    zoom += yOffset * 0.05f * zoom;
+    zoom -= yOffset * 0.01;
 }
 
 int main()
@@ -102,7 +102,7 @@ int main()
 
     int aspectW = 16;
     int aspectH = 9;
-    int aspectN = 200;
+    int aspectN = 100;
     GLFWwindow* window = glfwCreateWindow(aspectW * aspectN, aspectH * aspectN, "Fractals", nullptr, nullptr);
     if (window == nullptr)
     {
@@ -122,8 +122,8 @@ int main()
 
     // Load and compile shaders
 
-    std::string vertexShaderSource = readFile("vertexShader.glsl");
-    std::string fragmentShaderSource = readFile("fragmentShader.glsl");
+    std::string vertexShaderSource = readFile("3d_vertex_shader.glsl");
+    std::string fragmentShaderSource = readFile("3d_fragment_shader.glsl");
 
     GLuint shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource);
 
@@ -168,6 +168,10 @@ int main()
         GLint zoomLocation = glGetUniformLocation(shaderProgram, "zoom");
         glUseProgram(shaderProgram);
         glUniform1f(zoomLocation, (float) zoom);
+
+        GLint timeLocation = glGetUniformLocation(shaderProgram, "time");
+        glUseProgram(shaderProgram);
+        glUniform1f(timeLocation, (float) glfwGetTime());
 
         // Render the screen
 

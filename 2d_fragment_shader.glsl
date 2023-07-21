@@ -23,7 +23,7 @@ void main()
 
     for (int i = 0; i <= jumps; i++) {
         z = multiplyComplex(z, z) + c;
-        if (length(z) >= 10.0 / zoom) {
+        if (length(z) >= 10.0) {
             float n = float(i) / float(jumps);
             color = vec3(n, 0.0, 0.0);
             break;
