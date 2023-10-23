@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cppdbg",
+            "request": "launch",
+            "name": "Launch 3D Fractals",
+            "program": "${workspaceFolder}/build/applications/3d_fractals/3d_fractals",
+            "cwd": "${workspaceFolder}/build/applications/3d_fractals"
+        },
+        {
+            "type": "cppdbg",
+            "request": "launch",
+            "name": "Launch 2D Fractals",
+            "program": "${workspaceFolder}/build/applications/2d_fractals/2d_fractals",
+            "cwd": "${workspaceFolder}/build/applications/2d_fractals"
+        }
+    ]
+}

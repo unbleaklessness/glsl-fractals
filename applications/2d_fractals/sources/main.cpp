@@ -122,8 +122,8 @@ int main()
 
     // Load and compile shaders
 
-    std::string vertexShaderSource = readFile("2d_vertex_shader.glsl");
-    std::string fragmentShaderSource = readFile("2d_fragment_shader.glsl");
+    std::string vertexShaderSource = readFile("vertex_shader.vert");
+    std::string fragmentShaderSource = readFile("fragment_shader.frag");
 
     GLuint shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource);
 

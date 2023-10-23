@@ -53,7 +53,7 @@ float DE(vec3 pos) {
 
         orbitTrap.x = min(orbitTrap.x, pow(length(z - vec3(1, 0, 0)), 2.));
         orbitTrap.y = min(orbitTrap.y, pow(length(z - vec3(0, 1, 0)), 2.));
-        orbitTrap.z = min(orbitTrap.z, pow(length(z - vec3(0, 0, 1)), 2.));
+        orbitTrap.z = min(orbitTrap.z, pow(length(z - vec3(0, 0, 2)), 2.));
     }
 
     return 0.5 * log(r) * r / dr;
