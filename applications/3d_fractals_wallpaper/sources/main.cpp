@@ -106,6 +106,7 @@ int main()
     // X11
 
     Imlib_Image image;
+    Imlib_Image scaledImage;
     Display *display;
     Pixmap pixelMap;
     Window rootWindow;
@@ -130,10 +131,10 @@ int main()
 
     int aspectW = 16;
     int aspectH = 9;
-    int aspectN = 160;
+    int aspectN = 120;
     int screenWidth = aspectW * aspectN;
     int screenHeight = aspectH * aspectN;
-    GLFWwindow* window = glfwCreateWindow(aspectW * aspectN, aspectH * aspectN, "Fractals", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "Fractals", nullptr, nullptr);
     if (window == nullptr)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
@@ -177,16 +178,18 @@ int main()
     glfwSetCursorPosCallback(window, cursorPositionCallback);
 
     float deltaTime = 0.025f;
-    float time = 0.f;
+    float time{};
 
     GLubyte* pixels = new GLubyte[3 * screenWidth * screenHeight]; // 3 channels (RGB)
     unsigned int *ARGBData = (unsigned int *) malloc(screenWidth * screenHeight * sizeof(unsigned int));
 
+    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
     pixelMap = XCreatePixmap(
         display,
         rootWindow,
-        screenWidth,
-        screenHeight,
+        mode->width,
+        mode->height,
         DefaultDepthOfScreen(screen)
     );
 
@@ -244,8 +247,14 @@ int main()
 
         // Create an image from the ARGB data
         image = imlib_create_image_using_data(screenWidth, screenHeight, ARGBData);
-
         imlib_context_set_image(image);
+
+        scaledImage = imlib_create_cropped_scaled_image(
+            0, 0, 
+            screenWidth, screenHeight,
+            mode->width, mode->height);
+        imlib_context_set_image(scaledImage);
+
         imlib_context_set_display(display);
         imlib_context_set_visual(DefaultVisualOfScreen(screen));
         imlib_context_set_colormap(DefaultColormapOfScreen(screen));
