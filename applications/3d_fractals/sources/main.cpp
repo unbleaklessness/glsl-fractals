@@ -1,9 +1,14 @@
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
+#include <string>
+#include <iomanip>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <png.h>
 
 std::string readFile(const std::string& filePath)
 {
@@ -91,6 +96,53 @@ void scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
     zoom -= yOffset * 0.01;
 }
 
+void savePNG(const char *filePath, GLubyte *pixels, int width, int height) {
+    FILE *file = fopen(filePath, "wb");
+    if (!file) return;
+
+    png_structp image = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+    if (!image) return;
+
+    png_infop info = png_create_info_struct(image);
+    if (!info) return;
+
+    if (setjmp(png_jmpbuf(image))) return;
+
+    png_init_io(image, file);
+
+    // Output is 8-bit depth, RGB format.
+    png_set_IHDR(
+        image,
+        info,
+        width, height,
+        8,
+        PNG_COLOR_TYPE_RGB,
+        PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_DEFAULT,
+        PNG_FILTER_TYPE_DEFAULT
+    );
+
+    png_write_info(image, info);
+
+    // Write image data.
+    for (int y = 0; y < height; y++) {
+        png_write_row(image, pixels + (y * width * 3));
+    }
+
+    // End write.
+    png_write_end(image, nullptr);
+
+    if (file != nullptr) fclose(file);
+    if (info != nullptr) png_free_data(image, info, PNG_FREE_ALL, -1);
+    if (image != nullptr) png_destroy_write_struct(&image, (png_infopp) nullptr);
+}
+
+std::string padNumberWithZeros(int number, int width) {
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(width) << number;
+    return oss.str();
+}
+
 int main()
 {
     // Initialize GLFW and create a window
@@ -146,6 +198,23 @@ int main()
     glfwSetScrollCallback(window, scrollCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
 
+    size_t frameNumber = 0;
+
+    std::filesystem::path directoryPath = "images";
+    std::filesystem::remove_all(directoryPath);
+    try {
+        if (std::filesystem::create_directory(directoryPath)) {
+            std::cout << "Directory created successfully." << std::endl;
+        } else {
+            std::cout << "Directory already exists or an error occurred." << std::endl;
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "An error occurred: `" << e.what() << "`." << std::endl;
+    }
+
+    float deltaTime = 0.025f;
+    float time = 0.f;
+
     // Rendering loop
 
     while (!glfwWindowShouldClose(window))
@@ -171,13 +240,33 @@ int main()
 
         GLint timeLocation = glGetUniformLocation(shaderProgram, "time");
         glUseProgram(shaderProgram);
-        glUniform1f(timeLocation, (float) glfwGetTime());
+        glUniform1f(timeLocation, time);
 
         // Render the screen
 
         glUseProgram(shaderProgram);
         glBindVertexArray(quadVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // Capture
+
+        GLubyte* pixels = new GLubyte[3 * screenWidth * screenHeight]; // 3 channels (RGB)
+        glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+        if (false) {
+            std::string fileName = padNumberWithZeros(frameNumber, 5) + ".png";
+            std::filesystem::path filePath = directoryPath / fileName;
+            savePNG(filePath.c_str(), pixels, screenWidth, screenHeight);
+            frameNumber++;
+        }
+
+        // Time
+
+        time += deltaTime;
+
+        if (time >= 12. * 2. * M_PI) {
+            break;
+        }
 
         // Swap buffers and poll events
 

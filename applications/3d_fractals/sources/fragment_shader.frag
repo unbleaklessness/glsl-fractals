@@ -178,7 +178,7 @@ void main()
     vec3 rayDirection = normalize(vec3(uv.x, uv.y, -1.));
     
     float rotationSensitivity = 0.5;
-#if 1
+#if 0
     mat3 rotationX = rotate(vec3(1, 0, 0), 2. * PI * offset.y / screenSize.y * rotationSensitivity - PI);
     mat3 rotationY = rotate(vec3(0, 1, 0), 2. * PI * offset.x / screenSize.x * rotationSensitivity);
 #else

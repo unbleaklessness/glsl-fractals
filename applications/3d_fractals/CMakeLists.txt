@@ -2,6 +2,7 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
+find_package(PNG REQUIRED)
 
 set(EXECUTABLE 3d_fractals)
 
@@ -12,7 +13,9 @@ target_link_libraries(${EXECUTABLE} PRIVATE glfw)
 target_link_libraries(${EXECUTABLE} PRIVATE ${GLEW_LIBRARIES})
 target_link_libraries(${EXECUTABLE} PRIVATE ${OPENGL_LIBRARIES})
 target_link_libraries(${EXECUTABLE} PRIVATE glm::glm)
+target_link_libraries(${EXECUTABLE} PRIVATE ${PNG_LIBRARIES})
 target_include_directories(${EXECUTABLE} PRIVATE ${GLEW_INCLUDE_DIRS})
+target_include_directories(${EXECUTABLE} PRIVATE ${PNG_INCLUDE_DIRS})
 target_compile_options(${EXECUTABLE} PRIVATE -g -O3)
 target_compile_features(${EXECUTABLE} PRIVATE cxx_std_17)
 
