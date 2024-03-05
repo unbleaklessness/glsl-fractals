@@ -176,20 +176,6 @@ int main()
     glfwSetScrollCallback(window, scrollCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
 
-    size_t frameNumber = 0;
-
-    std::filesystem::path directoryPath = "images";
-    std::filesystem::remove_all(directoryPath);
-    try {
-        if (std::filesystem::create_directory(directoryPath)) {
-            std::cout << "Directory created successfully." << std::endl;
-        } else {
-            std::cout << "Directory already exists or an error occurred." << std::endl;
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "An error occurred: `" << e.what() << "`." << std::endl;
-    }
-
     float deltaTime = 0.025f;
     float time = 0.f;
 
