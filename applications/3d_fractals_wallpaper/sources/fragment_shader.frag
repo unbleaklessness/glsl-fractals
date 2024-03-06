@@ -2,8 +2,6 @@
 
 uniform vec2 screenSize;  // Width and height of the shader
 uniform float time;  // Time elapsed
-uniform vec2 offset;
-uniform float zoom;
 
 // Constants
 #define PI 3.1415925359
@@ -177,16 +175,12 @@ void main()
     vec3 rayOrigin = vec3(0, 0, 1);
     vec3 rayDirection = normalize(vec3(uv.x, uv.y, -1.));
     
-    float rotationSensitivity = 0.5;
-#if 0
-    mat3 rotationX = rotate(vec3(1, 0, 0), 2. * PI * offset.y / screenSize.y * rotationSensitivity - PI);
-    mat3 rotationY = rotate(vec3(0, 1, 0), 2. * PI * offset.x / screenSize.x * rotationSensitivity);
-#else
     mat3 rotationX = rotate(vec3(1, 0, 0), PI * sin(time / 12.));
     mat3 rotationY = rotate(vec3(0, 1, 0), PI * cos(time / 12));
-#endif
     mat3 rotation = rotationX * rotationY;
     
+    float zoom = 1;
+
     rayDirection = rotation * rayDirection;
     rayOrigin = rotation * vec3(0, 0, 2) * zoom * 1.5;
     

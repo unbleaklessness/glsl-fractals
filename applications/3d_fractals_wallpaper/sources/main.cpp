@@ -1,19 +1,14 @@
-#include <chrono>
 #include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <filesystem>
 #include <string>
-#include <iomanip>
-#include <cmath>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <Imlib2.h>
-#include <thread>
 
 std::string readFile(const std::string& filePath)
 {
@@ -77,30 +72,6 @@ float quadVertices[] = {
         1.0f,  1.0f
 };
 
-double offsetX = 0.0f;
-double offsetY = 0.0f;
-double zoom = 1.0f;
-
-void cursorPositionCallback(GLFWwindow* window, double xPosition, double yPosition)
-{
-    static double lastPositionX = xPosition;
-    static double lastPositionY = yPosition;
-
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-    {
-        offsetX += (xPosition - lastPositionX) * zoom;
-        offsetY += (yPosition - lastPositionY) * zoom;
-    }
-
-    lastPositionX = xPosition;
-    lastPositionY = yPosition;
-}
-
-void scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
-{
-    zoom -= yOffset * 0.01;
-}
-
 int main()
 {
     // X11
@@ -115,7 +86,7 @@ int main()
     display = XOpenDisplay(NULL);
     if (!display) {
         std::cerr << "Could not open display!" << std::endl;
-        return 0;
+        return -1;
     }
     screen = DefaultScreenOfDisplay(display);
     rootWindow = RootWindow(display, DefaultScreen(display));
@@ -174,9 +145,6 @@ int main()
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    glfwSetScrollCallback(window, scrollCallback);
-    glfwSetCursorPosCallback(window, cursorPositionCallback);
-
     float deltaTime = 0.025f;
     float time{};
 
@@ -193,13 +161,11 @@ int main()
         DefaultDepthOfScreen(screen)
     );
 
-    Atom propertyRoot, propertyESetRoot;
-    propertyRoot = XInternAtom(display, "_XROOTPMAP_ID", False);
-    propertyESetRoot = XInternAtom(display, "ESETROOT_PMAP_ID", False);
-
+    Atom propertyRoot = XInternAtom(display, "_XROOTPMAP_ID", False);
+    Atom propertyESetRoot = XInternAtom(display, "ESETROOT_PMAP_ID", False);
     if (propertyRoot == None || propertyESetRoot == None) {
         std::cerr << "Creation of pixmap property failed!" << std::endl;
-        return 1;
+        return -1;
     }
 
     // Rendering loop
@@ -214,14 +180,6 @@ int main()
         GLint screenSizeLocation = glGetUniformLocation(shaderProgram, "screenSize");
         glUseProgram(shaderProgram);
         glUniform2f(screenSizeLocation, (float) screenWidth, (float) screenHeight);
-
-        GLint offsetLocation = glGetUniformLocation(shaderProgram, "offset");
-        glUseProgram(shaderProgram);
-        glUniform2f(offsetLocation, (float) offsetX, (float) offsetY);
-
-        GLint zoomLocation = glGetUniformLocation(shaderProgram, "zoom");
-        glUseProgram(shaderProgram);
-        glUniform1f(zoomLocation, (float) zoom);
 
         GLint timeLocation = glGetUniformLocation(shaderProgram, "time");
         glUseProgram(shaderProgram);
