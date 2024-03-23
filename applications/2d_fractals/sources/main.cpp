@@ -1,11 +1,12 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-std::string readFile(const std::string& filePath)
+std::string
+readFile(const std::string& filePath)
 {
     std::ifstream fileStream(filePath);
     std::stringstream stringStream;
@@ -13,17 +14,17 @@ std::string readFile(const std::string& filePath)
     return stringStream.str();
 }
 
-GLuint compileShader(GLenum shaderType, const std::string& shaderSource)
+GLuint
+compileShader(GLenum shaderType, const std::string& shaderSource)
 {
     GLuint shader = glCreateShader(shaderType);
-    const char *source = shaderSource.c_str();
+    const char* source = shaderSource.c_str();
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
 
     GLint success;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
+    if (!success) {
         GLchar infoLog[512];
         glGetShaderInfoLog(shader, 512, nullptr, infoLog);
         std::cerr << "Shader compilation error: " << infoLog << std::endl;
@@ -32,10 +33,13 @@ GLuint compileShader(GLenum shaderType, const std::string& shaderSource)
     return shader;
 }
 
-GLuint createShaderProgram(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
+GLuint
+createShaderProgram(const std::string& vertexShaderSource,
+                    const std::string& fragmentShaderSource)
 {
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
-    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+    GLuint fragmentShader =
+      compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
 
     GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
@@ -44,8 +48,7 @@ GLuint createShaderProgram(const std::string& vertexShaderSource, const std::str
 
     GLint success;
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
+    if (!success) {
         GLchar infoLog[512];
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
         std::cerr << "Shader program linking error: " << infoLog << std::endl;
@@ -57,27 +60,20 @@ GLuint createShaderProgram(const std::string& vertexShaderSource, const std::str
     return shaderProgram;
 }
 
-float quadVertices[] = {
-        -1.0f,  1.0f,
-        -1.0f, -1.0f,
-        1.0f, -1.0f,
-
-        -1.0f,  1.0f,
-        1.0f, -1.0f,
-        1.0f,  1.0f
-};
+float quadVertices[] = { -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
+                         -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f };
 
 double offsetX = 0.0f;
 double offsetY = 0.0f;
 double zoom = 1.0f;
 
-void cursorPositionCallback(GLFWwindow* window, double xPosition, double yPosition)
+void
+cursorPositionCallback(GLFWwindow* window, double xPosition, double yPosition)
 {
     static double lastPositionX = xPosition;
     static double lastPositionY = yPosition;
 
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-    {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         offsetX -= (xPosition - lastPositionX) * zoom;
         offsetY += (yPosition - lastPositionY) * zoom;
     }
@@ -86,12 +82,14 @@ void cursorPositionCallback(GLFWwindow* window, double xPosition, double yPositi
     lastPositionY = yPosition;
 }
 
-void scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
+void
+scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
     zoom += yOffset * 0.05f * zoom;
 }
 
-int main()
+int
+main()
 {
     // Initialize GLFW and create a window
 
@@ -103,9 +101,12 @@ int main()
     int aspectWidth = 16;
     int aspectHeight = 9;
     int aspectScale = 200;
-    GLFWwindow* window = glfwCreateWindow(aspectWidth * aspectScale, aspectHeight * aspectScale, "Fractals", nullptr, nullptr);
-    if (window == nullptr)
-    {
+    GLFWwindow* window = glfwCreateWindow(aspectWidth * aspectScale,
+                                          aspectHeight * aspectScale,
+                                          "Fractals",
+                                          nullptr,
+                                          nullptr);
+    if (window == nullptr) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -114,8 +115,7 @@ int main()
 
     // Initialize GLEW
 
-    if (glewInit() != GLEW_OK)
-    {
+    if (glewInit() != GLEW_OK) {
         std::cerr << "Failed to initialize GLEW" << std::endl;
         return -1;
     }
@@ -125,18 +125,21 @@ int main()
     std::string vertexShaderSource = readFile("vertex_shader.vert");
     std::string fragmentShaderSource = readFile("fragment_shader.frag");
 
-    GLuint shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource);
+    GLuint shaderProgram =
+      createShaderProgram(vertexShaderSource, fragmentShaderSource);
 
     GLuint quadVBO;
     glGenBuffers(1, &quadVBO);
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    glBufferData(
+      GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
     GLuint quadVAO;
     glGenVertexArrays(1, &quadVAO);
     glBindVertexArray(quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*) nullptr);
+    glVertexAttribPointer(
+      0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)nullptr);
     glEnableVertexAttribArray(0);
 
     glUseProgram(shaderProgram);
@@ -148,8 +151,7 @@ int main()
 
     // Rendering loop
 
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         // Clear the screen
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -157,17 +159,19 @@ int main()
 
         int screenWidth, screenHeight;
         glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
-        GLint screenSizeLocation = glGetUniformLocation(shaderProgram, "screenSize");
+        GLint screenSizeLocation =
+          glGetUniformLocation(shaderProgram, "screenSize");
         glUseProgram(shaderProgram);
-        glUniform2f(screenSizeLocation, (float) screenWidth, (float) screenHeight);
+        glUniform2f(
+          screenSizeLocation, (float)screenWidth, (float)screenHeight);
 
         GLint offsetLocation = glGetUniformLocation(shaderProgram, "offset");
         glUseProgram(shaderProgram);
-        glUniform2f(offsetLocation, (float) offsetX, (float) offsetY);
+        glUniform2f(offsetLocation, (float)offsetX, (float)offsetY);
 
         GLint zoomLocation = glGetUniformLocation(shaderProgram, "zoom");
         glUseProgram(shaderProgram);
-        glUniform1f(zoomLocation, (float) zoom);
+        glUniform1f(zoomLocation, (float)zoom);
 
         // Render the screen
 

@@ -6,13 +6,17 @@ uniform float zoom;
 
 out vec4 returnColor;
 
-vec2 multiplyComplex(vec2 a, vec2 b) {
+vec2
+multiplyComplex(vec2 a, vec2 b)
+{
     return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
 }
 
-void main()
+void
+main()
 {
-    vec2 uv = (gl_FragCoord.xy / screenSize - 0.5) * zoom + 0.5 + offset / screenSize;
+    vec2 uv =
+      (gl_FragCoord.xy / screenSize - 0.5) * zoom + 0.5 + offset / screenSize;
 
     int jumps = 500;
 
