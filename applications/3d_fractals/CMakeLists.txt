@@ -25,13 +25,14 @@ set(PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/sources")
 set(FILES_TO_COPY
     "${PREFIX}/vertex_shader.vert"
     "${PREFIX}/fragment_shader.frag"
-    "${PREFIX}/fragment_shader_mandelbox.frag")
+    "${PREFIX}/fragment_shader_mandelbox.frag"
+)
 
 foreach(file ${FILES_TO_COPY})
     add_custom_command(
-        TARGET ${EXECUTABLE} PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ${file}
-        "$<TARGET_FILE_DIR:${EXECUTABLE}>")
+        TARGET ${EXECUTABLE}
+        PRE_BUILD
+        COMMAND
+            ${CMAKE_COMMAND} -E copy ${file} "$<TARGET_FILE_DIR:${EXECUTABLE}>"
+    )
 endforeach()
-

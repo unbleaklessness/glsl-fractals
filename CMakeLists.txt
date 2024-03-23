@@ -7,4 +7,3 @@ add_subdirectory(applications/2d_fractals)
 add_subdirectory(applications/3d_fractals)
 add_subdirectory(applications/3d_fractals_wallpaper)
 add_subdirectory(libraries/flight_controller)
-
